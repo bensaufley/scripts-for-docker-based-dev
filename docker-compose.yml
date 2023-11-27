@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - TODO:8000 # Change port on Host computer; should not just be :8000 to avoid conflicts with other apps using these scripts
+  db:
+    image: postgres:12.17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - TODO:5432  # Change port on Host computer; should not just be :5432 to avoid conflicts with other apps using these scripts
+  wait-for-db:
+    image: dadarek/wait-for-dependencies
+    command: db:5432

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+cd "$(dirname "$0")/.."
+
+help() {
+  echo "Usage: $0 [-h]"
+  echo
+  echo "Checks for local dependencies and suggests options"
+  echo "to install or configure them if missing."
+  echo
+  echo "Options:"
+  echo "  -h Show this message and exit"
+  echo
+}
+
+while getopts 'h' flag; do
+  case "${flag}" in
+    h) help; exit 0 ;;
+    *) help >&2; exit 1;;
+  esac
+done
+
+./script/util/check-for-dependency docker \
+  "Please install Docker and retry. For more information,\nsee https://docs.docker.com/install/"
+
+./script/util/check-for-dependency "Docker Compose v2" \
+  "Please enable Docker Compose v2 and retry. For more information,\nsee https://docs.docker.com/compose/migrate/" \
+  "docker compose version 2>/dev/null | grep -q 'version v2'"

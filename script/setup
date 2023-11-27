@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+cd "$(dirname "$0")/.."
+
+help() {
+  echo "Usage: $0 [-h]"
+  echo
+  echo "Initializes the local environment without cache."
+  echo
+  echo "Options:"
+  echo "  -h Show this message and exit"
+  echo
+}
+
+while getopts 'h' flag; do
+  case "${flag}" in
+    h) help; exit 0 ;;
+    *) help >&2; exit 1;;
+  esac
+done
+
+docker compose build --no-cache
+
+script/migrate -n

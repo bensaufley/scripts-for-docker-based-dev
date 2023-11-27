@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+cd "$(dirname "$0")/.."
+
+service="app"
+update=true
+
+help() {
+  echo "Usage: $0 [-u] [-h] COMMAND"
+  echo
+  echo "Runs a command in the given service."
+  echo
+  echo "Options:"
+  echo "  -s NAME The name of the service to run the command in (default: app)"
+  echo "  -n      Do not run script/update first"
+  echo "  -h      Show this message and exit"
+  echo "  COMMAND The command to be run in the container"
+  echo
+}
+
+while getopts 'nhs:' flag; do
+  case "${flag}" in
+    s) service="$OPTARG" ;;
+    n) update=false; shift ;;
+    h) help; exit 0; ;;
+    *) help >&2; exit 1;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ $# -eq 0 ]; then
+  echo -e "\x1b[31mError:\x1b[0m COMMAND is a required argument" >&2
+  help >&2
+  exit 1
+fi
+
+if [ "$update" = false ]; then
+  if docker compose ps -q "$service" >/dev/null 2>&1; then
+    echo "Opening console in running container..."
+    docker compose exec "$service" "$@"
+  else
+    echo "Opening console in new container..."
+    docker compose run --rm --service-ports "$service" "$@"
+  fi
+else
+  script/update
+  echo "Opening console in new container..."
+  docker compose run --rm --service-ports "$service" "$@"
+fi
+

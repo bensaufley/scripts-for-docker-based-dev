@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+cd "$(dirname "$0")/.."
+
+update=true
+
+help() {
+  echo "Usage: $0 [-n] [-h]"
+  echo
+  echo "Runs database migrations."
+  echo
+  echo "Options:"
+  echo "  -n  Do not run script/update first"
+  echo "  -h  Show this help message"
+}
+
+while getopts 'nh' flag; do
+  case "${flag}" in
+    n) update=false ;;
+    h) help; exit 0 ;;
+    *) error "Unexpected option ${flag}" ;;
+  esac
+done
+
+if [ "$update" = true ]; then
+  script/update
+fi
+
+if docker compose ps -q db >/dev/null 2>&1; then
+  trap 'docker compose stop db' EXIT INT TERM
+  docker compose run --rm wait-for-db
+fi
+
+# This does not exit 1 because these are base scripts and no migrations shouldn't prevent spin-up
+docker compose run --rm app sh -c 'echo -e "\x1b[31mError:\x1b[0m no migrations configured" >&2'

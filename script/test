@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+cd "$(dirname "$0")/.."
+
+help() {
+  echo "Usage: $0 [-h]"
+  echo
+  echo "Runs the test suite."
+  echo
+  echo "Options:"
+  echo "  -h Show this message and exit"
+  echo
+}
+
+while getopts 'h' flag; do
+  case "${flag}" in
+    h) help; exit 0 ;;
+    *) help >&2; exit 1;;
+  esac
+done
+
+script/cmd -s app sh -c 'echo -e "\x1b[31mError:\x1b[0m no test command given" >&2; exit 1'

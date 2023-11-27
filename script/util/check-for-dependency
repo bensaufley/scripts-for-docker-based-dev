@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+cmd="$1"
+name="$1"
+error_message="${2:-Please install and retry}"
+
+if [ -n "$3" ]; then
+  cmd="$3"
+else
+  cmd='command -v "'$1'" >/dev/null 2>&1'
+fi
+
+if eval "$cmd"; then
+  echo -e "\x1b[32mConfirmed\x1b[0m Dependency $name is installed." >&2
+else
+  echo -e "\x1b[31mError:\x1b[0m Dependency $name is not installed." >&2
+  echo -e "$error_message" >&2
+  exit 1
+fi

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+cd "$(dirname "$0")/.."
+
+update=true
+
+help() {
+  echo "Usage: $0 [-u] [-h]"
+  echo
+  echo "Spins up the local environment."
+  echo
+  echo "Options:"
+  echo "  -n Do not run script/update first"
+  echo "  -h Show this message and exit"
+  echo
+}
+
+while getopts 'nh' flag; do
+  case "${flag}" in
+    n) update=false; shift ;;
+    h) help; exit 0; ;;
+    *) help >&2; exit 1;;
+  esac
+done
+
+if [ "$update" = true ]; then
+  script/update
+fi
+
+trap 'docker compose down' EXIT INT TERM
+
+docker compose up

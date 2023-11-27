@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+cd "$(dirname "$0")/.."
+
+update=""
+service=( -s app )
+
+help() {
+  echo "Usage: $0 [-u] [-h]"
+  echo
+  echo "Opens a console in the given service."
+  echo
+  echo "Options:"
+  echo "  -s NAME  Service to open a console in (default: app)"
+  echo "  -n       Do not run script/update first"
+  echo "  -h       Show this message and exit"
+  echo
+}
+
+while getopts 'nhs:' flag; do
+  case "${flag}" in
+    s) service=( -s "$OPTARG" ) ;;
+    n) update="-n"; shift ;;
+    h) help; exit 0; ;;
+    *) help >&2; exit 1;;
+  esac
+done
+shift $((OPTIND - 1))
+
+script/cmd $update "${service[@]}" bin/sh
