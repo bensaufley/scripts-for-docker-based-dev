@@ -14,6 +14,11 @@ easier, which is why this is a repo of Docker-centric scripts). I wanted to
 create a set of scripts that could be used, at least as a starting point, across
 projects to make the ramp-up process easier.
 
+There's a lot here and a number of things that hopefully make life easier, but
+the main thing is that a developer should be able to pull a repo, run
+`script/server`, and have a server running in Docker on their local machine
+quickly and easily.
+
 ## Scripts
 
 Scripts can be invoked from the root of the project with `script/[name]`. They
@@ -29,6 +34,8 @@ should all respond to `-h` for help.
 - `setup`: Set up the Docker environment from scratch. Will not use cache.
   Should do things like build all images, migrate db, etc. Will not obliterate
   volumes if they already exist. Calls `script/bootstrap` and `script/migrate`.
+  `setup` might also do things like pull secrets (using, e.g., the
+  [1Password CLI]) or seed the database for initial use.
 - `update`: Update the Docker environment. Will use cache. Will also do things
   like migrate db, etc. Will not obliterate volumes if they already exist. Calls
   `script/bootstrap` and `script/migrate`. Essentially behaves as `script/setup`
@@ -44,3 +51,4 @@ should all respond to `-h` for help.
   environment.
 
 [scripts to rule them all]: https://github.com/github/scripts-to-rule-them-all
+[1password cli]: https://developer.1password.com/docs/cli/
